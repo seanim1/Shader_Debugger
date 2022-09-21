@@ -91,20 +91,19 @@ const Controller = {
 const valuesChanger = function () {
     camera_zoom = Controller.Camera_Zoom;
     camera.position.z = camera_zoom;
-    
+}
+
+const timePauser = function () {
     if (pause_time) {
         timer.start();
     } else {
         timer.stop();
     }
-
     pause_time = Controller.Pause_Time;
-
-
 }
 
 gui.add( Controller, 'Camera_Zoom', 3, 18, 1 ).onChange( valuesChanger );
-gui.add( Controller, 'Pause_Time' ).onChange( valuesChanger );
+gui.add( Controller, 'Pause_Time' ).onChange( timePauser );
 
 window.addEventListener( 'resize', onWindowResize );
 function onWindowResize() {
