@@ -1,4 +1,5 @@
 body {
+	font-family: Arial;
     margin: 0;
     /* This fixes mobile touchscreen drag problem */    
     touch-action: none;
@@ -18,12 +19,38 @@ body {
 	top: 0px;
 	width: 100%;
 	padding: 10px;
-	box-sizing: border-box;
 	text-align: center;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	pointer-events: none;
+	
 	z-index: 1; /* TODO Solve this in HTML */
+}
+
+#copyright {
+	margin-left: 1em;
+	position: absolute;
+	text-align: left;
+	color: ghostwhite;
+}
+
+#Back_to_Website {
+	font-size: 1em;
+}
+
+#Back_to_Website:hover {
+	font-size: 1em;
+	font-size: 1.2em;
+}
+
+a:link {
+    color: lightblue;
+}
+
+a:visited {
+    color: lightgreen;
+}
+a:hover {
+    color: violet;
+}
+
+a:active {
+    color: white;
 }
