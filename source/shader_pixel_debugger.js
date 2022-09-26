@@ -119,55 +119,6 @@ function onWindowResize() {
     labelRenderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-// fragCoord is THREE.Vector2
-function fragment_shader( fragCoord ) {
-    for ( let y = 0; y < resolution_y; y++ ) {
-        for ( let x = 0; x < resolution_x; x++ ) {
-            const fragColor = new THREE.Vector3;
-            const i = y * resolution_x + x; // index_of_pixel
-            const time = timer.getElapsedTime() // time since the beginning
-
-/////***/////////////////////////////////////////////////////////////////////////////***/////
-/////***/////////////////////////////////////////////////////////////////////////////***/////
-            /////***/////  WRITE YOUR SHADER CODE HERE  /////***/////
-
-
-            const uv = new THREE.Vector2( fragCoord[i].x / resolution_x, fragCoord[i].y / resolution_y );
-
-            fragColor.set( 0.5 + 0.5*Math.cos( time + uv.x + 0), 0.5 + 0.5*Math.cos( time + uv.y + 2 ), 0.5 + 0.5*Math.cos( time + uv.x + 3 ) )
-            
-            
-            /////***/////  WRITE YOUR SHADER CODE HERE  /////***/////
-/////***/////////////////////////////////////////////////////////////////////////////***/////
-/////***/////////////////////////////////////////////////////////////////////////////***/////
-
-            // ( scene's children[0] = screen ) -> ( screen.children[0] = screen_pixel[0~143] ) -> ( screen_pixel.children[0] = CSS2DObject )
-            scene.children[0].children[ i ].material.color.setRGB( fragColor.x, fragColor.y, fragColor.z );
-
-            // < Update CSS2DObject Text >
-            const pixelDiv = document.createElement( 'div' );
-            pixelDiv.className = 'label';
-            
-            // This would be the accurate numbers, but, 
-            /* pixelDiv.textContent =
-             String( Math.round( fragColor.x * 10 ) / 10 ) + "," 
-             + String( Math.round( fragColor.y * 10 ) / 10 ) + "," 
-             + String( Math.round( fragColor.z * 10 ) / 10 ); */
-
-            // Given the tight space, this is more ideal. Numbers moving from 0 to 9.
-            pixelDiv.textContent =
-             String( Math.round( fragColor.x * 9 ) ) + "," 
-             + String( Math.round( fragColor.y * 9 ) ) + "," 
-             + String( Math.round( fragColor.z * 9 ) );
-
-            const pixelLabel = new CSS2DObject( pixelDiv );
-            scene.children[0].children[ i ].remove(scene.children[0].children[ i ].children[0]);
-            scene.children[0].children[ i ].add(pixelLabel);
-        }
-    }
-    // Normalized pixel coordinates (from 0 to 1)
-}
-
 // game loop
 function animate() {
     requestAnimationFrame( animate );
@@ -182,3 +133,114 @@ function animate() {
 
 init();
 animate();
+
+// fragCoord is THREE.Vector2
+function fragment_shader( fragCoord ) {
+    for ( let y = 0; y < resolution_y; y++ ) {
+        for ( let x = 0; x < resolution_x; x++ ) {
+            const fragColor = new THREE.Vector3;
+            const i = y * resolution_x + x; // index_of_pixel
+            const time = timer.getElapsedTime() // time since the beginning
+
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+            /////***/////  WRITE YOUR SHADER CODE HERE  /////***/////
+
+            //const fragOutput = default_rainbow_shader( fragCoord, i, time );
+            const fragOutput = shader_default_rainbow( fragCoord, i, time );
+            
+            /////***/////  WRITE YOUR SHADER CODE HERE  /////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+
+            fragColor.set( fragOutput.x, fragOutput.y, fragOutput.z );
+
+            // ( scene's children[0] = screen ) -> ( screen.children[0] = screen_pixel[0~143] ) -> ( screen_pixel.children[0] = CSS2DObject )
+            scene.children[0].children[ i ].material.color.setRGB( fragColor.x, fragColor.y, fragColor.z );
+
+            // < Update CSS2DObject Text >
+            const pixelDiv = document.createElement( 'div' );
+            pixelDiv.className = 'label';
+            
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+            /////***/////  WRITE YOUR SHADER DISPLAY HERE  /////***/////
+
+            pixelDiv.textContent = display_0_to_9( fragColor );
+            
+            /////***/////  WRITE YOUR SHADER DISPLAY HERE  /////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+/////***/////////////////////////////////////////////////////////////////////////////***/////
+
+            // This would be the accurate numbers, but, 
+             /*pixelDiv.textContent =
+             String( Math.round( fragColor.x * 10 ) / 10 ) + " | " 
+             + String( Math.round( fragColor.y * 10 ) / 10 ) + " | " 
+             + String( Math.round( fragColor.z * 10 ) / 10 ); */
+
+            // Given the tight space, this is more ideal. Numbers moving from 0 to 9.
+            /*pixelDiv.textContent =
+             String( Math.round( fragColor.x * 9 ) ) + "," 
+             + String( Math.round( fragColor.y * 9 ) ) + "," 
+             + String( Math.round( fragColor.z * 9 ) ); */
+
+
+
+            const pixelLabel = new CSS2DObject( pixelDiv );
+            scene.children[0].children[ i ].remove(scene.children[0].children[ i ].children[0]);
+            scene.children[0].children[ i ].add(pixelLabel);
+        }
+    }
+    // Normalized pixel coordinates (from 0 to 1)
+}
+
+// Shaders
+function shader_default_rainbow ( fragCoord, i, time ) {
+
+    const uv = new THREE.Vector2( fragCoord[i].x / resolution_x, fragCoord[i].y / resolution_y );
+        
+    const col = new THREE.Vector3( 0.5 + 0.5*Math.cos( time + uv.x + 0), 0.5 + 0.5*Math.cos( time + uv.y + 2 ), 0.5 + 0.5*Math.cos( time + uv.x + 3 ) );
+
+    const mousePos = new THREE.Vector2(  );
+
+    return col;
+}
+
+function shader_circle ( fragCoord, i, time ) {
+
+    const uv = new THREE.Vector2( 
+        ( fragCoord[i].x - (0.5*resolution_x) ) / resolution_y,
+        ( fragCoord[i].y - (0.5*resolution_y) ) / resolution_y 
+    );
+
+    const d = uv.length();
+    let c = 0;
+    if ( d < 0.3 ) {
+        c = 1;
+    } else {
+        c = 0;
+    }
+
+    const col = new THREE.Vector3( c,c,c );
+    return col;
+}
+
+function display_0_to_9 ( fragColor ) {
+    // Given the tight space, this is more ideal. Numbers moving from 0 to 9.
+    // Mapped [0.0 - 1.0] -> [0, 9]
+     
+    return String( Math.round( fragColor.x * 9 ) ) + "," 
+    + String( Math.round( fragColor.y * 9 ) ) + "," 
+    + String( Math.round( fragColor.z * 9 ) );
+}
+
+function display_xyz_accurate ( fragColor ) {    
+    return String( Math.round( fragColor.x * 10 ) / 10 ) + ", " 
+            + String( Math.round( fragColor.y * 10 ) / 10 ) + ", " 
+            + String( Math.round( fragColor.z * 10 ) / 10 );
+}
+
+function display_xy_accurate ( fragColor ) {    
+    return String( Math.round( fragColor.x * 10 ) / 10 ) + ", " 
+            + String( Math.round( fragColor.y * 10 ) / 10 );
+}
