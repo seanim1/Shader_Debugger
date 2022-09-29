@@ -1,4 +1,4 @@
-import * as THREE from '../libs/three.module.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.145.0/three.module.js';
 import { GUI } from '../libs/lil-gui.esm.min.js';
 import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
 
@@ -199,9 +199,7 @@ function shader_default_rainbow ( fragCoord, i, time ) {
 
     const uv = new THREE.Vector2( fragCoord[i].x / resolution_x, fragCoord[i].y / resolution_y );
         
-    const col = new THREE.Vector3( 0.5 + 0.5*Math.cos( time + uv.x + 0), 0.5 + 0.5*Math.cos( time + uv.y + 2 ), 0.5 + 0.5*Math.cos( time + uv.x + 3 ) );
-
-    const mousePos = new THREE.Vector2(  );
+    let col = new THREE.Vector3( 0.5 + 0.5*Math.cos( time + uv.x + 0), 0.5 + 0.5*Math.cos( time + uv.y + 2 ), 0.5 + 0.5*Math.cos( time + uv.x + 3 ) );
 
     return col;
 }
