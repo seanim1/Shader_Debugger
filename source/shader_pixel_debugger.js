@@ -1,3 +1,4 @@
+// Sean Im, 2022
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.145.0/three.module.js';
 import { GUI } from '../libs/lil-gui.esm.min.js';
 import { CSS2DRenderer, CSS2DObject } from '../libs/CSS2DRenderer.js';
@@ -48,16 +49,6 @@ function init() {
             const material = new THREE.MeshBasicMaterial( { color: 0xffffff} );
 
             const screen_pixel = new THREE.Mesh( geometry, material );
-
-            // Label for each pixel
-            const pixelDiv = document.createElement( 'div' );
-            pixelDiv.className = 'label';
-            pixelDiv.textContent = String( fragCoord[ count ].x ) + "," + String( fragCoord[ count ].y );
-            const pixelLabel = new CSS2DObject( pixelDiv );
-            pixelLabel.position.set( 0, 0, 0 );
-            pixelLabel.layers.set( 0 );
-
-            screen_pixel.add( pixelLabel )
 
             screen.add( screen_pixel );
 
@@ -166,7 +157,11 @@ function fragment_shader( fragCoord ) {
 /////***/////////////////////////////////////////////////////////////////////////////***/////
             /////***/////  WRITE YOUR SHADER DISPLAY HERE  /////***/////
 
-            pixelDiv.textContent = display_0_to_9( fragColor );
+
+            pixelDiv.innerHTML += "R: " + String( fragColor.x.toFixed(1) ) + "<br>"
+                                + "G: " + String( fragColor.y.toFixed(1) ) + "<br>"
+                                + "B: " + String( fragColor.z.toFixed(1) ) + "<br>"
+
             
             /////***/////  WRITE YOUR SHADER DISPLAY HERE  /////***/////
 /////***/////////////////////////////////////////////////////////////////////////////***/////
@@ -223,22 +218,8 @@ function shader_circle ( fragCoord, i, time ) {
     return col;
 }
 
-function display_0_to_9 ( fragColor ) {
-    // Given the tight space, this is more ideal. Numbers moving from 0 to 9.
-    // Mapped [0.0 - 1.0] -> [0, 9]
-     
-    return String( Math.round( fragColor.x * 9 ) ) + "," 
-    + String( Math.round( fragColor.y * 9 ) ) + "," 
-    + String( Math.round( fragColor.z * 9 ) );
-}
-
 function display_xyz_accurate ( fragColor ) {    
-    return String( Math.round( fragColor.x * 10 ) / 10 ) + ", " 
-            + String( Math.round( fragColor.y * 10 ) / 10 ) + ", " 
-            + String( Math.round( fragColor.z * 10 ) / 10 );
-}
-
-function display_xy_accurate ( fragColor ) {    
-    return String( Math.round( fragColor.x * 10 ) / 10 ) + ", " 
-            + String( Math.round( fragColor.y * 10 ) / 10 );
+    return String( fragColor.x.toFixed(1) ) + ","
+            + String( fragColor.y.toFixed(1) ) + "," 
+            + String( fragColor.z.toFixed(1) );
 }
